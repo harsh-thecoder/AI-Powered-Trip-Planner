@@ -1,6 +1,5 @@
 import './App.css'
 import Hero from './My Components/Hero'
-// 30 : 22
 
 function App() {
 
