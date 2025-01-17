@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import PlacesFourSquare from "./PlacesFourSquare";
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,7 @@ import { SelectTravelList } from "./SelectTravelList";
 import { Button } from "@/components/ui/button";
 import { useToast } from "../hooks/use-toast"; // Adjust path based on file structure
 import { ToastAction } from "@/components/ui/toast";
+import { AI_PROMPT, chatSession } from "@/service/AIModel";
 
 function CreateTrip() {
   const [place, setPlaces] = useState(); // State to store the selected place
@@ -38,12 +38,21 @@ function CreateTrip() {
     }
   }, [place]); // Dependency array ensures this effect runs only when "place" changes
 
-  const OnGenerateTrip = () => {
+  const OnGenerateTrip = async() => {
     if (formdata?.noOfDays > 5) {
       // Use the toast here
       toast({
         title: "Invalid Number of Days",
         description: "Please enter number of days less than 5.",
+        action: <ToastAction altText="Okay">Okay</ToastAction>,
+      });
+      return;
+    }
+
+    if(formdata?.noOfDays <= 0) {
+       toast({
+        title: "Invalid Number of Days",
+        description: "Please enter number of days more than 0.",
         action: <ToastAction altText="Okay">Okay</ToastAction>,
       });
       return;
@@ -58,7 +67,17 @@ function CreateTrip() {
       return;
     }
 
-    console.log(formdata);
+    const FINAL_PROMPT = AI_PROMPT
+    .replace('{location}', formdata?.location?.display_name)
+    .replace('{totaldays}',formdata?.noOfDays)
+    .replace('{traveler}',formdata?.traveler)
+    .replace('{budget}',formdata?.budget)
+
+    console.log(FINAL_PROMPT);
+    
+    const result = await chatSession.sendMessage(FINAL_PROMPT);
+    console.log(result?.response?.text());
+     
   };
 
   return (
