@@ -1,13 +1,7 @@
-// const {
-//   GoogleGenerativeAI,
-//   HarmCategory,
-//   HarmBlockThreshold,
-// } = require("@google/generative-ai");
-
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// const apiKey = import.meta.env.VITE_GEMINI_AI_API_KEY;
-const apiKey = 'AIzaSyBWGJWXkQbbT-tMA1Il82otIIGHBDslfzg';
+const apiKey = import.meta.env.VITE_GEMINI_AI_API_KEY;  
+// const apiKey = 'AIzaSyBWGJWXkQbbT-tMA1Il82otIIGHBDslfzg';
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({

@@ -8,11 +8,19 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "../hooks/use-toast"; // Adjust path based on file structure
 import { ToastAction } from "@/components/ui/toast";
 import { AI_PROMPT, chatSession } from "@/service/AIModel";
+import { FcGoogle } from "react-icons/fc";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader, 
+} from "@/components/ui/dialog";
 
 function CreateTrip() {
   const [place, setPlaces] = useState(); // State to store the selected place
   const [formdata, setFormdata] = useState([]);
   const { toast } = useToast(); // Initialize the toast hook
+  const [dialog, setDialog] = useState(false); // For Google sign-in dialog
 
   const handleInputChange = (name, value) => {
     setFormdata({
@@ -36,11 +44,17 @@ function CreateTrip() {
     if (place) {
       console.log("Selected Place:", place);
     }
-  }, [place]); // Dependency array ensures this effect runs only when "place" changes
+  }, [place]);
 
-  const OnGenerateTrip = async() => {
+  const OnGenerateTrip = async () => {
+    const user = localStorage.getItem("user");
+
+    if (!user) {
+      setDialog(true); // Show sign-in dialog if user is not authenticated
+      return;
+    }
+
     if (formdata?.noOfDays > 5) {
-      // Use the toast here
       toast({
         title: "Invalid Number of Days",
         description: "Please enter number of days less than 5.",
@@ -49,8 +63,8 @@ function CreateTrip() {
       return;
     }
 
-    if(formdata?.noOfDays <= 0) {
-       toast({
+    if (formdata?.noOfDays <= 0) {
+      toast({
         title: "Invalid Number of Days",
         description: "Please enter number of days more than 0.",
         action: <ToastAction altText="Okay">Okay</ToastAction>,
@@ -68,16 +82,15 @@ function CreateTrip() {
     }
 
     const FINAL_PROMPT = AI_PROMPT
-    .replace('{location}', formdata?.location?.display_name)
-    .replace('{totaldays}',formdata?.noOfDays)
-    .replace('{traveler}',formdata?.traveler)
-    .replace('{budget}',formdata?.budget)
+      .replace("{location}", formdata?.location?.display_name)
+      .replace("{totaldays}", formdata?.noOfDays)
+      .replace("{traveler}", formdata?.traveler)
+      .replace("{budget}", formdata?.budget);
 
     console.log(FINAL_PROMPT);
-    
+
     const result = await chatSession.sendMessage(FINAL_PROMPT);
     console.log(result?.response?.text());
-     
   };
 
   return (
@@ -141,6 +154,21 @@ function CreateTrip() {
       <div className="my-10 flex justify-end">
         <Button onClick={OnGenerateTrip}>Generate Trip</Button>
       </div>
+
+      <Dialog open={dialog} onOpenChange={setDialog}>
+        <DialogContent className="w-80 py-3 px-4">
+          <DialogHeader>
+            <DialogDescription className="space-y-3">
+              <img src="logo.jpg" alt="" className="mx-auto" />
+              <h2 className="font-bold text-lg">Sign In with Google</h2>
+              <p className="text-sm text-gray-600">Sign in to the App with Google authentication securely</p>
+              <Button className="w-full mt-3 mb-3">
+                <FcGoogle className="mr-2" /> Sign in With Google
+              </Button>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
