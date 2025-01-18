@@ -15,6 +15,8 @@ import {
   DialogDescription,
   DialogHeader, 
 } from "@/components/ui/dialog";
+import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 
 function CreateTrip() {
   const [place, setPlaces] = useState(); // State to store the selected place
@@ -46,14 +48,27 @@ function CreateTrip() {
     }
   }, [place]);
 
-  const OnGenerateTrip = async () => {
-    const user = localStorage.getItem("user");
+  const login = useGoogleLogin({
+    onSuccess: (codeResp) => {
+      console.log(codeResp);
+      GetUserProfile(codeResp); // Fetch user profile
+    },
+    onError: (error) => {
+      console.error("Google OAuth Error:", error);
+    },
+  });
+  
 
+  const OnGenerateTrip = async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+  
+    // If user is not signed in, prompt them to sign in
     if (!user) {
-      setDialog(true); // Show sign-in dialog if user is not authenticated
+      setDialog(true); // Show sign-in dialog
       return;
     }
-
+  
+    // Validate the form inputs
     if (formdata?.noOfDays > 5) {
       toast({
         title: "Invalid Number of Days",
@@ -62,7 +77,7 @@ function CreateTrip() {
       });
       return;
     }
-
+  
     if (formdata?.noOfDays <= 0) {
       toast({
         title: "Invalid Number of Days",
@@ -71,7 +86,7 @@ function CreateTrip() {
       });
       return;
     }
-
+  
     if (!formdata?.budget || !formdata?.traveler || !formdata?.location || !formdata?.noOfDays) {
       toast({
         title: "Incomplete Form",
@@ -80,18 +95,45 @@ function CreateTrip() {
       });
       return;
     }
-
+  
+    // Generate the AI prompt
     const FINAL_PROMPT = AI_PROMPT
       .replace("{location}", formdata?.location?.display_name)
       .replace("{totaldays}", formdata?.noOfDays)
       .replace("{traveler}", formdata?.traveler)
       .replace("{budget}", formdata?.budget);
-
+  
     console.log(FINAL_PROMPT);
-
+  
+    // Send the AI prompt for processing
     const result = await chatSession.sendMessage(FINAL_PROMPT);
-    console.log(result?.response?.text());
+    console.log(await result?.response?.text());
   };
+  
+  const GetUserProfile = (tokenInfo) => {
+    axios
+      .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo?.access_token}`, {
+        headers: {
+          Authorization: `Bearer ${tokenInfo?.access_token}`,
+          Accept: "application/json",
+        },
+      })
+      .then((resp) => {
+        console.log(resp.data);
+        localStorage.setItem("user", JSON.stringify(resp.data)); // Save user profile
+        setDialog(false); // Close the dialog
+        OnGenerateTrip(); // Retry generating the trip
+      })
+      .catch((err) => {
+        console.error("Error fetching user profile:", err);
+        toast({
+          title: "Sign-In Error",
+          description: "Failed to fetch user profile. Please try again.",
+          action: <ToastAction altText="Retry">Retry</ToastAction>,
+        });
+      });
+  };
+  
 
   return (
     <div className="sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10">
@@ -162,7 +204,9 @@ function CreateTrip() {
               <img src="logo.jpg" alt="" className="mx-auto" />
               <h2 className="font-bold text-lg">Sign In with Google</h2>
               <p className="text-sm text-gray-600">Sign in to the App with Google authentication securely</p>
-              <Button className="w-full mt-3 mb-3">
+              <Button 
+                 onClick = {login} 
+                 className="w-full mt-3 mb-3">
                 <FcGoogle className="mr-2" /> Sign in With Google
               </Button>
             </DialogDescription>
