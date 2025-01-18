@@ -9,6 +9,11 @@ import { useToast } from "../hooks/use-toast"; // Adjust path based on file stru
 import { ToastAction } from "@/components/ui/toast";
 import { AI_PROMPT, chatSession } from "@/service/AIModel";
 import { FcGoogle } from "react-icons/fc";
+import { db } from "@/service/firebaseconfig";
+import { setDoc } from "firebase/firestore";
+import { doc } from "firebase/firestore";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+
 import {
   Dialog,
   DialogContent,
@@ -23,6 +28,7 @@ function CreateTrip() {
   const [formdata, setFormdata] = useState([]);
   const { toast } = useToast(); // Initialize the toast hook
   const [dialog, setDialog] = useState(false); // For Google sign-in dialog
+  const [loading,setLoading] = useState(false);
 
   const handleInputChange = (name, value) => {
     setFormdata({
@@ -78,7 +84,7 @@ function CreateTrip() {
       return;
     }
   
-    if (formdata?.noOfDays <= 0) {
+    if (formdata?.noOfDays < 0) {
       toast({
         title: "Invalid Number of Days",
         description: "Please enter number of days more than 0.",
@@ -96,19 +102,36 @@ function CreateTrip() {
       return;
     }
   
-    // Generate the AI prompt
-    const FINAL_PROMPT = AI_PROMPT
+       setLoading(true);
+       // Generate the AI prompt
+       const FINAL_PROMPT = AI_PROMPT
       .replace("{location}", formdata?.location?.display_name)
       .replace("{totaldays}", formdata?.noOfDays)
       .replace("{traveler}", formdata?.traveler)
       .replace("{budget}", formdata?.budget);
   
-    console.log(FINAL_PROMPT);
+    // console.log(FINAL_PROMPT);
   
     // Send the AI prompt for processing
     const result = await chatSession.sendMessage(FINAL_PROMPT);
-    console.log(await result?.response?.text());
+    console.log("--",result?.response?.text());
+    setLoading(false);
+    SaveAITrip(result?.response?.text());
   };
+
+  const SaveAITrip = async (TripData) => {
+
+      setLoading(true);
+      const user = JSON.parse(localStorage.getItem('user'));
+      const docID = Date.now().toString();
+      await setDoc(doc(db, "AITrips", docID), {
+      userSelection: formdata,
+      tripData: JSON.parse(TripData),
+      userEmail: user?.email,
+      id: docID
+      });
+      setLoading(false); 
+  }
   
   const GetUserProfile = (tokenInfo) => {
     axios
@@ -194,7 +217,13 @@ function CreateTrip() {
       </div>
 
       <div className="my-10 flex justify-end">
-        <Button onClick={OnGenerateTrip}>Generate Trip</Button>
+        <Button 
+           disabled = {loading}
+           onClick={OnGenerateTrip}>
+          {loading ? 
+             <AiOutlineLoading3Quarters className="h-7 w-7 animate-spin" /> : 'Generate Trip'
+          }
+        </Button>
       </div>
 
       <Dialog open={dialog} onOpenChange={setDialog}>
