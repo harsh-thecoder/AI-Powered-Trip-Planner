@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function CreateTrip() {
   const [place, setPlaces] = useState(); // State to store the selected place
@@ -29,6 +30,7 @@ function CreateTrip() {
   const { toast } = useToast(); // Initialize the toast hook
   const [dialog, setDialog] = useState(false); // For Google sign-in dialog
   const [loading,setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleInputChange = (name, value) => {
     setFormdata({
@@ -131,6 +133,7 @@ function CreateTrip() {
       id: docID
       });
       setLoading(false); 
+      navigate(`/view-trip/${docID}`);
   }
   
   const GetUserProfile = (tokenInfo) => {

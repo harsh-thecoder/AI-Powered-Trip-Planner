@@ -46,4 +46,4 @@ const generationConfig = {
     ],
   });
 
- export const AI_PROMPT = 'Generate Travel Plan for Location : {location} for {totaldays} days for {traveler} people with a {budget} Budget, Give me a Hotels options list with Hotel Name, Hotel Address, Price, Hotel Image url, geo coordinates, rating, descriptions and suggest itinary with Place Name, Place details , Place Image url, Geo coordinates, Place rating, ticket pricing Time travel of each location for 3 days with each day plan with best time to visit in json format';
+ export const AI_PROMPT = 'Generate Travel Plan for Location : {location} for {totaldays} days for {traveler} people with a {budget} Budget, Give me a Hotels options list with Hotel Name, Hotel Address, Price, Hotel Image url, geo coordinates, rating, descriptions and suggest itinary with Place Name, Place details , Place Image url, Geo coordinates, Place rating, ticket pricing Time travel of each location for {totaldays} days with each day plan with best time to visit in json format';
