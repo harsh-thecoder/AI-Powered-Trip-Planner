@@ -28,7 +28,7 @@ function PlacesToVisit({ trip }) {
                       style={{ maxWidth: '1000px', margin: '0 auto' }}
                     >
                       {/* Image Section */}
-                      <div className="w-full md:w-1/3">
+                      <div className="w-full md:w-1/2">  {/* Reduced width to 1/2 */}
                         <img
                           src='/Trip Image.jpg'
                           alt={place.place_name}
@@ -37,7 +37,7 @@ function PlacesToVisit({ trip }) {
                       </div>
 
                       {/* Info Section */}
-                      <div className="p-6 w-full md:w-2/3">
+                      <div className="p-6 w-full md:w-1/2"> {/* Info section still takes up 1/2 */}
                         <h4 className="font-semibold text-lg text-blue-500">{place.place_name}</h4> {/* Blue Title */}
                         <p className="text-gray-600 mt-2">{place.place_details}</p>
                         <div className="mt-4">
