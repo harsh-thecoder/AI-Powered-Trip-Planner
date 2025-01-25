@@ -6,6 +6,7 @@ import InformationSection from './Components/InformationSection';
 import HotelsInfo from './Components/HotelsInfo';
 import PlacesToVisit from './Components/PlacesToVisit';
 import Footer from './Components/Footer';
+import PlacesToVisit2 from '../PlacesToVisit2';
 
 function ViewTrip() {
   const {tripId} = useParams();
@@ -40,7 +41,8 @@ function ViewTrip() {
           <HotelsInfo trip = {trip}/>
 
          {/* Daily Plan */}
-         <PlacesToVisit trip={trip}/>
+         {/* <PlacesToVisit trip={trip}/> */}
+         <PlacesToVisit2 trip = {trip}/>
 
          {/* Footer */}
          <Footer/>
