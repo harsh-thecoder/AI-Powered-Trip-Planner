@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from 'pexels';
+import { Link } from 'react-router-dom';
 
 function UserTripCardItem({ trip }) {
   const val = import.meta.env.VITE_PEXELS_API_KEY; // Access the Pexels API key
@@ -31,6 +32,7 @@ function UserTripCardItem({ trip }) {
   }, [trip]);
 
   return (
+    <Link to = {'/view-trip/'+trip?.id}>
     <div className="rounded-xl border p-4 shadow-md transition-transform hover:scale-105 hover:shadow-lg">
       <div className="overflow-hidden rounded-xl group">
         <img
@@ -50,6 +52,7 @@ function UserTripCardItem({ trip }) {
         <p className="text-gray-500">🚶‍♂️ {trip?.userSelection?.traveler} Traveler(s)</p>
       </div>
     </div>
+    </Link>
   );
 }
 
