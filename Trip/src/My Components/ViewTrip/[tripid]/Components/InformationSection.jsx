@@ -13,7 +13,6 @@ function InformationSection({ trip }) {
 
     try {
       const response = await client.photos.search({ query, per_page: 1 });
-
       const photos = response.photos;
       if (photos.length > 0) {
         const photo = photos[0];

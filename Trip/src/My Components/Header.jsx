@@ -17,7 +17,7 @@ import {
     DialogHeader, 
   } from "@/components/ui/dialog";
 import { useNavigate } from 'react-router-dom';
-
+import MyTrips from './MyTrip';
 
 
 function Header() {
@@ -66,8 +66,10 @@ function Header() {
             </div>
             {user ?
                 <div className='flex items-center gap-3'>
-
-                    <Button variant="outline" className="rounded-full">My Trips</Button>
+                    
+                    <a href="/my-trips">
+                      <Button variant="outline" className="rounded-full">My Trips</Button>
+                    </a>
                     <Popover>
                         <PopoverTrigger>
                         <img src={user?.picture} className='h-[50px] w-[50px] rounded-full' />
