@@ -4,8 +4,9 @@ import { BsFillSendFill } from 'react-icons/bs';
 import { createClient } from 'pexels';
 
 function InformationSection({ trip }) {
+  const val = import.meta.env.VITE_PEXELS_API_KEY;
   const [imageUrl, setImageUrl] = useState('/Trip Image.jpg'); // Default image
-  const client = createClient('e9XVYtoCy2GjEv6N1c8stNr9RVurSxaq1e7gpbLCrV7Uu5EZCQFcV2RY'); // Initialize Pexels client
+  const client = createClient(val); // Initialize Pexels client
 
   const fetchLocationImage = async (location) => {
     const query = location;

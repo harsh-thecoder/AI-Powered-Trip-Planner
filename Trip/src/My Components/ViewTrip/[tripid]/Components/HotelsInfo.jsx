@@ -4,7 +4,8 @@ import { createClient } from 'pexels';
 
 function HotelsInfo({ trip }) {
   const [images, setImages] = useState({});
-  const client = createClient('e9XVYtoCy2GjEv6N1c8stNr9RVurSxaq1e7gpbLCrV7Uu5EZCQFcV2RY'); // Initialize Pexels client
+  const val = import.meta.env.VITE_PEXELS_API_KEY;
+  const client = createClient(val); // Initialize Pexels client
 
   const fetchHotelImage = async (hotelName) => {
     const query = hotelName;
